@@ -62,39 +62,42 @@
 	
 	\question{Problem 1} 
 	
-	1. $mn$ \\
-	2. $m^{n}$
+	1. $2^{mn}$ \\
+	2. $mn$
 
 	\question{Problem 2}
 	
 	\part{1} $\Pi_{B}(R \bowtie S) =\Pi_{B}(R) \cap \Pi_{B}(S)$ \\
 	For the left side, from the definition of natural join, \\
-	$\Pi_{B}(R \bowtie S) = \Pi_{R \cup B} (\sigma_{R.B = S.B} (R \times B)) = \{B | B \in R \cap B \in S\}$ 
-	
+	$$\Pi_{B}(R \bowtie S) = \Pi_{R \cup S} (\sigma_{R.B = S.B} (R \times S)) = \{B | B \in R \cap S\}$$
 	For the right side, 
-	$\Pi_{B}(R) \cap \Pi_{B}(S) = \{B | B \in R \cap B \in S\} $ \\
+	$$\Pi_{B}(R) \cap \Pi_{B}(S) = \{B | B \in R \cap S\} $$ 
 	which is equal to the right side. \\
+	Hence, both sides are equivalent. $\square$
 	
-	Hence, both sides are equivalent.
-	
-
-    \part{2} $\Pi_{A,C}(R \bowtie \sigma_{B=0}(S)) =\Pi_{A}(\sigma_{B=0}(R)) \times  \Pi_{C}(\sigma_{B=0}(S))$
+    \part{2} $\Pi_{A,C}(R \bowtie \sigma_{B=0}(S)) =\Pi_{A}(\sigma_{B=0}(R)) \times  \Pi_{C}(\sigma_{B=0}(S))$ \\
+    $$ \Pi_{A,C}(R \bowtie \sigma_{B=0}(S)) =\Pi_{A, C}(\sigma_{B=0}(R) \times  \sigma_{B=0}(S))$$
+    $$ \Pi_{A,C} \Pi_{A \cup C}(\sigma_{B=0}(R \times S)) = \Pi_{A,C} (\sigma_{B=0}(R)) \times  \sigma_{B=0}(S)$$
+    $$ \sigma_{B=0}(R \times S) = \sigma_{B=0}(R) \times  \sigma_{B=0}(S)$$
+    $$ \sigma_{B=0}(R \times S) = \sigma_{B=0} (R \times S)$$
+    
+    Hence, both sides are equivalent. $\square$
 	
 	\question{Problem 3}
-	
 	\part{1} 
-	
-	\includegraphics[width=\textwidth]{[DBMS]HW1.png} \\
+	\vfill
+	\begin{center} 
+	\includegraphics[scale=0.6]{[DBMS]HW1.png} 
+	\end{center}
+	\vfill
 	\part{2} \\
 	propcompany(\underline{propname}: $string$, propno: $int$ ) \\
 	apartment(\underline{aptaddress}: $string$, \underline{office}: $string$, units: $int$) \\
 	parking(\underline{parkno}: $int$, status: $string$) \\
 	utilcompany(\underline{utilno}: $int$, utilname: $string$, utiladdress: $string$) \\
-	
 	\question{Problem 4}
 	
 	\includegraphics[width=\textwidth]{[DBMS]HW1-2.png}
-	
 	\question{Problem 5}
 	
 	\begin{verbatim}
@@ -104,8 +107,7 @@
 	sale(bar, brand_of_beer, year_record, number_of_sold)
 	\end{verbatim}
 	
-	\part{1}
-	
+	\part{1} \\
 	beer: \\
 	PRIMARY KEY (brand) \\
 	
@@ -118,11 +120,11 @@
 	FOREIGN KEY (brand\_of\_beer\_sold) REFERENCES beer (brand) \\
 	
 	sale: \\
-	PRIMARY KEY (year\_record) \\
+	PRIMARY KEY: NONE \\
 	FOREIGN KEY (bar) REFERENCES bar (name) \\
 	FOREIGN KEY (brand\_of\_beer) REFERENCES beer (brand) \\
 	
-	\part{2a}
+	\part{2a} 
 	
 	\begin{verbatim}
 	SELECT name FROM beer WHERE country_brewed <> country_sold
@@ -130,7 +132,7 @@
 	
 	$\Pi_{name} \sigma_{country\_brewed != country\_sold} (beer)$
 	
-	\part{2b}
+	\part{2b} 
 	
 	\begin{verbatim}
 	SELECT SUM(number_of_sold) FROM sale GROUP BY year_record
@@ -153,36 +155,25 @@
 	pc (model, speed, ram, storage)
 	laptop (model, speed, ram, storage, screen)
 	\end{verbatim}
-	
 	\part{1}
-	
 	\begin{verbatim}
 	SELECT DISTINCT COUNT(maker) FROM computer GROUP BY type
 	\end{verbatim}
-	
 	\part{2}
-	
 	\begin{verbatim}
 	SELECT maker FROM computer ORDER BY ( 
 	SELECT COUNT(model) FROM computer GROUP BY maker) 
 	DESC WHERE rownum = 1
 	\end{verbatim}
-	
 	\part{3}
-	
 	\begin{verbatim}
-	SELECT ABS(compc.price - comlaptop.price) difference
+	SELECT compc.model, comlaptop.model, ABS(compc.price - comlaptop.price) difference
 	FROM computer compc
 	INNER JOIN computer comlaptop ON
 	    compc.maker = comlaptop.maker
-	INNER JOIN pc ON 
-    	pc.model = compc.model
-	INNER JOIN laptop ON
-    	laptop.model = comlaptop.model
-	WHERE ABS(compc.price - comlaptop.price) < 100
+	WHERE compc.type = "pc"
+	AND comlaptop.type = "laptop"
+	AND ABS(compc.price - comlaptop.price) < 100
 	\end{verbatim}
-	
-
-	
 
 \end{document}
