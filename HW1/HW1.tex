@@ -1,0 +1,188 @@
+\documentclass[a4paper, 11pt]{article}
+\usepackage{fancyvrb, lipsum}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+
+
+\usepackage[margin=1in]{geometry}
+\usepackage{listings}
+\usepackage{color}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{frame=tb,
+	language=Java,
+	aboveskip=3mm,
+	belowskip=3mm,
+	showstringspaces=false,
+	columns=flexible,
+	basicstyle={\small\ttfamily},
+	numbers=none,
+	numberstyle=\tiny\color{gray},
+	keywordstyle=\color{blue},
+	commentstyle=\color{dkgreen},
+	stringstyle=\color{mauve},
+	breaklines=true,
+	breakatwhitespace=true,
+	tabsize=3
+}
+%\begin{lstlisting}
+%\end{lstlisting} write codes
+
+%begin{algorithm}
+
+\newcommand{\question}[2] {\vspace{.25in} \hrule\vspace{0.5em}
+	\noindent{\bf #1: #2} \vspace{0.5em}
+	\hrule \vspace{.10in}}
+\renewcommand{\part}[1] {\vspace{.10in} {\bf (#1)}}
+
+\newcommand{\myname}{Phairat Lin}
+\newcommand{\myhwnum}{1}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt plus 1pt}
+
+\pagestyle{fancyplain}
+
+\begin{document}
+	
+	\medskip                        % Skip a "medium" amount of space
+	% (latex determines what medium is)
+	% Also try: \bigskip, \littleskip
+	
+	\thispagestyle{plain}
+	\begin{center}                  % Center the following lines
+		{\Large ICCS240: Assignment \myhwnum} \\
+		\myname \\
+	\end{center}
+	
+	\question{Problem 1} 
+	
+	1. $mn$ \\
+	2. $m^{n}$
+
+	\question{Problem 2}
+	
+	\part{1} $\Pi_{B}(R \bowtie S) =\Pi_{B}(R) \cap \Pi_{B}(S)$ \\
+	For the left side, from the definition of natural join, \\
+	$\Pi_{B}(R \bowtie S) = \Pi_{R \cup B} (\sigma_{R.B = S.B} (R \times B)) = \{B | B \in R \cap B \in S\}$ 
+	
+	For the right side, 
+	$\Pi_{B}(R) \cap \Pi_{B}(S) = \{B | B \in R \cap B \in S\} $ \\
+	which is equal to the right side. \\
+	
+	Hence, both sides are equivalent.
+	
+
+    \part{2} $\Pi_{A,C}(R \bowtie \sigma_{B=0}(S)) =\Pi_{A}(\sigma_{B=0}(R)) \times  \Pi_{C}(\sigma_{B=0}(S))$
+	
+	\question{Problem 3}
+	
+	\part{1} 
+	
+	\includegraphics[width=\textwidth]{[DBMS]HW1.png} \\
+	\part{2} \\
+	propcompany(\underline{propname}: $string$, propno: $int$ ) \\
+	apartment(\underline{aptaddress}: $string$, \underline{office}: $string$, units: $int$) \\
+	parking(\underline{parkno}: $int$, status: $string$) \\
+	utilcompany(\underline{utilno}: $int$, utilname: $string$, utiladdress: $string$) \\
+	
+	\question{Problem 4}
+	
+	\includegraphics[width=\textwidth]{[DBMS]HW1-2.png}
+	
+	\question{Problem 5}
+	
+	\begin{verbatim}
+	beer(brand, standard_price, alcohol_percentage, country_brewed, country_sold)
+	company(brand, HQ_location, year_founded)
+	bar(name, location, brand_of_beer_sold, price_sold) 
+	sale(bar, brand_of_beer, year_record, number_of_sold)
+	\end{verbatim}
+	
+	\part{1}
+	
+	beer: \\
+	PRIMARY KEY (brand) \\
+	
+	company: \\
+	PRIMARY KEY (HQ\_location) \\
+	FOREIGN KEY (brand) REFERENCES beer (brand) \\
+	
+	bar: \\
+	PRIMARY KEY (name) \\
+	FOREIGN KEY (brand\_of\_beer\_sold) REFERENCES beer (brand) \\
+	
+	sale: \\
+	PRIMARY KEY (year\_record) \\
+	FOREIGN KEY (bar) REFERENCES bar (name) \\
+	FOREIGN KEY (brand\_of\_beer) REFERENCES beer (brand) \\
+	
+	\part{2a}
+	
+	\begin{verbatim}
+	SELECT name FROM beer WHERE country_brewed <> country_sold
+	\end{verbatim}
+	
+	$\Pi_{name} \sigma_{country\_brewed != country\_sold} (beer)$
+	
+	\part{2b}
+	
+	\begin{verbatim}
+	SELECT SUM(number_of_sold) FROM sale GROUP BY year_record
+	\end{verbatim}
+	
+	$\Pi_{SUM(number\_of\_sold)} \sigma\gamma_{year\_record}(sale)$
+	
+	\part{2c}
+	
+	\begin{verbatim}
+	SELECT name, brand FROM bar, beer WHERE price_sold > standard_price
+	\end{verbatim}
+	
+	$\Pi_{name, brand} \sigma_{price\_sold > standard\_price} (bar \times beer)$
+	
+	\question{Problem 6}
+	
+	\begin{verbatim}
+	computer (maker, model, type, price)
+	pc (model, speed, ram, storage)
+	laptop (model, speed, ram, storage, screen)
+	\end{verbatim}
+	
+	\part{1}
+	
+	\begin{verbatim}
+	SELECT DISTINCT COUNT(maker) FROM computer GROUP BY type
+	\end{verbatim}
+	
+	\part{2}
+	
+	\begin{verbatim}
+	SELECT maker FROM computer ORDER BY ( 
+	SELECT COUNT(model) FROM computer GROUP BY maker) 
+	DESC WHERE rownum = 1
+	\end{verbatim}
+	
+	\part{3}
+	
+	\begin{verbatim}
+	SELECT ABS(compc.price - comlaptop.price) difference
+	FROM computer compc
+	INNER JOIN computer comlaptop ON
+	    compc.maker = comlaptop.maker
+	INNER JOIN pc ON 
+    	pc.model = compc.model
+	INNER JOIN laptop ON
+    	laptop.model = comlaptop.model
+	WHERE ABS(compc.price - comlaptop.price) < 100
+	\end{verbatim}
+	
+
+	
+
+\end{document}
