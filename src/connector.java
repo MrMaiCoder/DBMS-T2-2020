@@ -1,10 +1,6 @@
 
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 public class connector {
     private static final String url = "jdbc:postgresql://db4parm-do-user-7150737-0.db.ondigitalocean.com:25060/defaultdb?sslmode=require";
@@ -18,18 +14,12 @@ public class connector {
 
             connection = DriverManager.getConnection(url,user,password);
 
-            System.out.println("Connected to PostgreSQL database!");
             Statement statement = connection.createStatement();
 
             System.out.println("Executing query...");
             ResultSet resultSet = statement.executeQuery(query );
-            while (resultSet.next()) {
-                System.out.println(resultSet.getString(1) +
-                        "\n" + resultSet.getString(2) +
-                        "\n" + resultSet.getString(3) +
-                        "\n" + resultSet.getString(4) +
-                        "\n" );
-            }
+            display(resultSet);
+
         } catch (SQLException e) {
             System.out.println("Connection failure.");
             e.printStackTrace();
@@ -38,6 +28,17 @@ public class connector {
         } finally {
             connection.close();
         }
+    }
+
+    public void display(ResultSet resultSet) throws SQLException {
+        ResultSetMetaData metaData = resultSet.getMetaData();
+        while (resultSet.next()) {
+            for (int i = 1; i <= metaData.getColumnCount(); i++) {
+                System.out.println(metaData.getColumnName(i)+ ": " + resultSet.getString(i));
+            }
+            System.out.println();
+        }
+        System.out.println("Query completed\n");
     }
 
 
